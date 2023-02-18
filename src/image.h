@@ -1,9 +1,4 @@
-/*-----------------------------------------------
- * Author:
- * Date:
- * Description:
- ----------------------------------------------*/
-
+// Copyright 2021, Aline Normoyle, alinen
 
 #ifndef AGL_IMAGE_H_
 #define AGL_IMAGE_H_
@@ -38,7 +33,7 @@ class Image {
   /** 
    * @brief Load the given filename 
    * @param filename The file to load, relative to the running directory
-   * @param flip Whether the file should flipped vertally when loaded
+   * @param flip Whether the file should flipped vertically when loaded
    * 
    * @verbinclude sprites.cpp
    */
@@ -49,7 +44,7 @@ class Image {
    * @param filename The file to load, relative to the running directory
    * @param flip Whether the file should flipped vertally before being saved
    */
-  bool save(const std::string& filename, bool flip = true) const;
+  bool save(const std::string& filename, bool flip = false) const;
 
   /** @brief Return the image width in pixels
    */
@@ -75,6 +70,9 @@ class Image {
    * match the size width * height * 3
    */
   void set(int width, int height, unsigned char* data);
+
+  // Memory clean up to use in other functions
+  void clean();
 
   /**
    * @brief Get the pixel at index (row, col)
@@ -178,14 +176,53 @@ class Image {
   // Assumes that the two images are the same size
   Image alphaBlend(const Image& other, float amount) const;
 
+  // Creates a three-dimensional effect
+  Image threeDim() const;
+
+  // Applies a border around the image
+  Image border() const;
+
+  // Applies threeD to image
+  Image tvcolors() const;
+
+  // Applies red dye to image to make it red toned
+  Image redDyePrint() const;
+
+  // Applies green dye to image to make it green toned
+  Image greenDyePrint() const;
+
+  // Applies blue dye to image to make it blue toned
+  Image blueDyePrint() const;
+
   // Convert the image to grayscale
   Image invert() const;
 
   // Convert the image to grayscale
   Image grayscale() const;
 
+  // Extracting only the red color from all pixels
+  Image extractRed() const;
+
+  // Extracting only the red color from all pixels
+  Image extractGreen() const;
+
+  // Extracting only the red color from all pixels
+  Image extractBlue() const;
+
+   // Keeping only the red color from all pixels
+  Image onlyRed() const;
+
+  // Keeping only the red color from all pixels
+  Image onlyGreen() const;
+
+  // Keeping only the red color from all pixels
+  Image onlyBlue() const;
+
   // return a bitmap version of this image
   Image colorJitter(int size) const;
+
+  // Randomized the colors
+  Image grainyEffect() const;
 
   // return a bitmap version of this image
   Image bitmap(int size) const;
@@ -195,6 +232,9 @@ class Image {
 
  private:
    // todo
+   int widthW, heightH, num_chan = 3, des_chan = 3;
+   char* pic = NULL;
+   bool stbiAlloc = false;
 };
 }  // namespace agl
 #endif  // AGL_IMAGE_H_

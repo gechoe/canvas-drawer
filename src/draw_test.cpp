@@ -1,3 +1,13 @@
+/**
+ * draw_test.cpp
+ * Author: Grace Choe
+ * Base Code Author: Aline Normoyle
+ * Date: 2/16/2023
+ * 
+ * Description:
+ * This program implements a class for 
+ */
+
 #include <iostream>
 #include "canvas.h"
 
@@ -57,7 +67,9 @@ int main(int argc, char** argv)
    drawer.vertex(10, 10);
    drawer.vertex(10, 90);
    drawer.vertex(90, 90);
+   drawer.end();
 
+   drawer.begin(TRIANGLES);
    drawer.color(255, 255, 0);
    drawer.vertex(90, 90);
    drawer.vertex(90, 10);
