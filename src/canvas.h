@@ -72,6 +72,7 @@ namespace agl
          Pixel pixColor, color1, color2, color3;
          PrimitiveType drawType;
          // vertexLoc vert;
+         int shareSide = 0;
          vector<vertexLoc> vertices;
          vector<Pixel> pixMultiColor;
       };

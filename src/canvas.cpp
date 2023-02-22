@@ -1,11 +1,14 @@
 #include "canvas.h"
+#include "math.h"
 #include <cassert>
+// #include <vector>
+// #include <algorithm>
 
 using namespace std;
 using namespace agl;
 
 Canvas::Canvas(int w, int h) : _canvas(w, h) {
-   // _canvas = Image(w, h);
+   _canvas = Image(w, h);
 }
 
 Canvas::~Canvas() {
@@ -108,14 +111,16 @@ void Canvas::drawline_high(vertexLoc pointA, vertexLoc pointB) {
    float F = (2 * W) - H;
 
    for (int y = pointA.yLoc; y <= pointB.yLoc; y++) {
-      if (pixMultiColor.size() == 2) {
-         color1 = pixMultiColor.at(0);
-         color2 = pixMultiColor.at(1);
-         vertexLoc pointCurr = {x, y};
+      if ((y < _canvas.width()) && (x < _canvas.height())) {
+         if (pixMultiColor.size() == 2) {
+            color1 = pixMultiColor.at(0);
+            color2 = pixMultiColor.at(1);
+            vertexLoc pointCurr = {x, y};
 
-         lineColor(pointA, color1, pointB, color2, pointCurr);
-      } else {
-         _canvas.set(y, x, pixColor);
+            lineColor(pointA, color1, pointB, color2, pointCurr);
+         } else {
+            _canvas.set(y, x, pixColor);
+         }
       }
 
       if (F > 0) {
@@ -204,6 +209,12 @@ void Canvas::end() {
          vertexLoc v3 = vertices.at(i + 2);
          drawTriangle(v1, v2, v3);
       }
+
+      // if (shareSide == 2) {
+      //    // Put down how to color the shared line
+      // }
+
+      shareSide = 0;
       vertices.clear();
       pixMultiColor.clear();
    }
@@ -211,6 +222,13 @@ void Canvas::end() {
 
 void Canvas::vertex(int x, int y) {
    vertexLoc vertex = {x, y};
+
+   // int *iter;
+   // iter = find(vertices.begin(), vertices.end(), vertex);
+   // if (iter != vertices.end()) {
+   //    shareSide++;
+   // }
+
    vertices.push_back(vertex);
 
    // if ((drawType == PrimitiveType::LINES) && (vertices.size() == 2)) {
