@@ -14,12 +14,13 @@ using namespace std;
 
 namespace agl
 {
-   enum PrimitiveType {UNDEFINED, LINES, TRIANGLES};
-   
-   class vertexLoc {
+   enum PrimitiveType {UNDEFINED, LINES, TRIANGLES, RECTANGLES};
+  
+   class vertexPos {
       public:
          int xLoc;
          int yLoc;
+         Pixel color;
    };
 
    class Canvas {
@@ -42,18 +43,23 @@ namespace agl
          // end();
          void begin(PrimitiveType type);
 
-         void lineColor(vertexLoc locA, Pixel colA, vertexLoc locB, Pixel colB, vertexLoc currLoc);
-         void triangleColor(float alphaA, Pixel colA, float betaB, Pixel colB, float gammaG, Pixel colC, vertexLoc currLoc);
+         void lineColor(vertexPos locA, vertexPos locB);//, vertexPos currLoc);
+         void triangleColor(float alphaA, float betaB, float gammaG, vertexPos locA, vertexPos locB, vertexPos locC);
 
-         void drawline(vertexLoc locA, vertexLoc locB);
-         void drawline_low(vertexLoc locA, vertexLoc locB);
-         void drawline_high(vertexLoc locA, vertexLoc locB);
+         void lineWidth(int lineWidthSize);
+         void drawline(vertexPos locA, vertexPos locB);
+         void drawline_low(vertexPos locA, vertexPos locB);
+         void drawline_high(vertexPos locA, vertexPos locB);
 
-         void drawTriangle(vertexLoc locA, vertexLoc locB, vertexLoc locC);
+         void drawTriangle(vertexPos locA, vertexPos locB, vertexPos locC);
+         void fragmenting(vertexPos locA, vertexPos locB, vertexPos locC);
+         void drawRectangle(vertexPos centerPos);
 
-         float f01(vertexLoc loc0, vertexLoc loc1, vertexLoc locCurr);
-         float f12(vertexLoc loc1, vertexLoc loc2, vertexLoc locCurr);
-         float f20(vertexLoc loc2, vertexLoc loc0, vertexLoc locCurr);
+         float f01(vertexPos loc0, vertexPos loc1, vertexPos locCurr);
+         float f12(vertexPos loc1, vertexPos loc2, vertexPos locCurr);
+         float f20(vertexPos loc2, vertexPos loc0, vertexPos locCurr);
+
+         void shareSide(vertexPos loc1, vertexPos loc2);
 
          void end();
 
@@ -61,23 +67,31 @@ namespace agl
          // x corresponds to the column; y to the row
          void vertex(int x, int y);
 
+         void widthLength(int w);
+         void heightLength(int h);
+
+         void fragmented(bool f);
+
          // Specify a color. Color components are in range [0,255]
          void color(unsigned char r, unsigned char g, unsigned char b);
 
          // Fill the canvas with the given background color
          void background(unsigned char r, unsigned char g, unsigned char b);
 
+         // Fill the canvas with the given background color
+         void background(Pixel bottomColor, Pixel topColor);
+
       private:
          Image _canvas;
-         Pixel pixColor, color1, color2, color3;
+         Pixel vertColor;//pixColor, color1, color2, color3;
          PrimitiveType drawType;
-         // vertexLoc vert;
-         int shareSide = 0;
-         vector<vertexLoc> vertices;
-         vector<Pixel> pixMultiColor;
+         vertexPos pointCurr;
+         vector<vertexPos> sharedVertex;
+         int wid, heig, lineSize;
+         bool fragment = false;
+         vector<vertexPos> vertices;
+         // vector<Pixel> pixMultiColor;
       };
 }
 
 #endif
-
-
