@@ -14,7 +14,8 @@ using namespace std;
 
 namespace agl
 {
-   enum PrimitiveType {UNDEFINED, LINES, TRIANGLES, RECTANGLES};
+   enum PrimitiveType {UNDEFINED, LINES, TRIANGLES, RECTANGLES, CIRCLES, POINT};
+   enum DrawFill {OUTLINE, FILL};
   
    class vertexPos {
       public:
@@ -42,6 +43,7 @@ namespace agl
          //    vertex(0,100);
          // end();
          void begin(PrimitiveType type);
+         void draw(DrawFill type);
 
          void lineColor(vertexPos locA, vertexPos locB);//, vertexPos currLoc);
          void triangleColor(float alphaA, float betaB, float gammaG, vertexPos locA, vertexPos locB, vertexPos locC);
@@ -54,6 +56,11 @@ namespace agl
          void drawTriangle(vertexPos locA, vertexPos locB, vertexPos locC);
          void fragmenting(vertexPos locA, vertexPos locB, vertexPos locC);
          void drawRectangle(vertexPos centerPos);
+         void widthLength(int w);
+         void heightLength(int h);
+         void drawCircle(vertexPos centerPos);
+         void radius(int r);
+         void drawPoint(vertexPos centerPos);
 
          float f01(vertexPos loc0, vertexPos loc1, vertexPos locCurr);
          float f12(vertexPos loc1, vertexPos loc2, vertexPos locCurr);
@@ -66,9 +73,6 @@ namespace agl
          // Specifiy a vertex at raster position (x,y)
          // x corresponds to the column; y to the row
          void vertex(int x, int y);
-
-         void widthLength(int w);
-         void heightLength(int h);
 
          void fragmented(bool f);
 
@@ -83,14 +87,14 @@ namespace agl
 
       private:
          Image _canvas;
-         Pixel vertColor;//pixColor, color1, color2, color3;
+         Pixel vertColor;
          PrimitiveType drawType;
+         DrawFill fillType = FILL;
          vertexPos pointCurr;
          vector<vertexPos> sharedVertex;
-         int wid, heig, lineSize;
+         int wid, heig, rad, lineSize;
          bool fragment = false;
          vector<vertexPos> vertices;
-         // vector<Pixel> pixMultiColor;
       };
 }
 

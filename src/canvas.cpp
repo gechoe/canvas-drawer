@@ -1,7 +1,8 @@
 #include "canvas.h"
 #include "math.h"
 #include <cassert>
-// #include <vector>
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <algorithm>
 
 using namespace std;
@@ -12,8 +13,6 @@ Canvas::Canvas(int w, int h) : _canvas(w, h) {
 }
 
 Canvas::~Canvas() {
-   // delete _canvas;
-   // _canvas = NULL;
 }
 
 void Canvas::save(const std::string& filename) {
@@ -22,6 +21,10 @@ void Canvas::save(const std::string& filename) {
 
 void Canvas::begin(PrimitiveType type) {
    drawType = type;
+}
+
+void Canvas::draw(DrawFill type) {
+   fillType = type;
 }
 
 void Canvas::lineColor(vertexPos pA, vertexPos pB) {//}, vertexPos pCurr) {
@@ -168,36 +171,52 @@ void Canvas::drawline_high(vertexPos pointA, vertexPos pointB) {
 }
 
 void Canvas::drawTriangle(vertexPos pointA, vertexPos pointB, vertexPos pointC) {
-   float alpha, beta, gamma;
+   if (fillType == OUTLINE) {
+      drawline(pointA, pointB);
+      drawline(pointB, pointC);
+      drawline(pointC, pointA);
+   } else {
+      float alpha, beta, gamma;
 
-   int xMin = min(pointA.xLoc, pointB.xLoc);
-   xMin = min(xMin, pointC.xLoc);
+      int xMin = min(pointA.xLoc, pointB.xLoc);
+      xMin = min(xMin, pointC.xLoc);
 
-   int xMax = max(pointA.xLoc, pointB.xLoc);
-   xMax = max(xMax, pointC.xLoc);
-   
-   int yMin = min(pointA.yLoc, pointB.yLoc);
-   yMin = min(yMin, pointC.yLoc);
+      int xMax = max(pointA.xLoc, pointB.xLoc);
+      xMax = max(xMax, pointC.xLoc);
+      
+      int yMin = min(pointA.yLoc, pointB.yLoc);
+      yMin = min(yMin, pointC.yLoc);
 
-   int yMax = max(pointA.yLoc, pointB.yLoc);
-   yMax = max(yMax, pointC.yLoc);
+      int yMax = max(pointA.yLoc, pointB.yLoc);
+      yMax = max(yMax, pointC.yLoc);
 
-   for (int y = yMin; y <= yMax; y++) {
-      for (int x = xMin; x <= xMax; x++) {
-         pointCurr = {x, y};
-         // alpha = f12(pointB, pointC, pointCurr) / f12(pointB, pointC, pointA);
-         // beta = f20(pointC, pointA, pointCurr) / f20(pointC, pointA, pointB);
-         // gamma = f01(pointA, pointB, pointCurr) / f01(pointA, pointB, pointC);
-         alpha = f12(pointB, pointC, pointCurr) / f12(pointB, pointC, pointA);
-         beta = f12(pointC, pointA, pointCurr) / f12(pointC, pointA, pointB);
-         gamma = f12(pointA, pointB, pointCurr) / f12(pointA, pointB, pointC);
+      for (int y = yMin; y <= yMax; y++) {
+         for (int x = xMin; x <= xMax; x++) {
+            pointCurr = {x, y};
+            // alpha = f12(pointB, pointC, pointCurr) / f12(pointB, pointC, pointA);
+            // beta = f20(pointC, pointA, pointCurr) / f20(pointC, pointA, pointB);
+            // gamma = f01(pointA, pointB, pointCurr) / f01(pointA, pointB, pointC);
+            alpha = f12(pointB, pointC, pointCurr) / f12(pointB, pointC, pointA);
+            beta = f12(pointC, pointA, pointCurr) / f12(pointC, pointA, pointB);
+            gamma = f12(pointA, pointB, pointCurr) / f12(pointA, pointB, pointC);
 
-         if (alpha > 0 && beta > 0 && gamma > 0) {
-            if ((y < _canvas.width()) && (x < _canvas.height())) {
-               triangleColor(alpha, beta, gamma, pointA, pointB, pointC);
-               _canvas.set(pointCurr.yLoc, pointCurr.xLoc, pointCurr.color);
+            if (alpha > 0 && beta > 0 && gamma > 0) {
+               if ((y < _canvas.width()) && (x < _canvas.height())) {
+                  triangleColor(alpha, beta, gamma, pointA, pointB, pointC);
+                  _canvas.set(pointCurr.yLoc, pointCurr.xLoc, pointCurr.color);
+               }
             }
          }
+      }
+
+      if (sharedVertex.size() > 0) {
+         vertexPos v1 = sharedVertex.at(0);
+         v1.xLoc--;
+         v1.yLoc--;
+         vertexPos v2 = sharedVertex.at(1);
+         v2.xLoc++;
+         v2.yLoc++;
+         drawline(v1, v2);
       }
    }
 }
@@ -275,24 +294,22 @@ void Canvas::drawRectangle(vertexPos centerPos) {
    vertexPos rect1a = {centerPos.xLoc + halfW, centerPos.yLoc + halfH, centerPos.color};
    vertexPos rect1b = {centerPos.xLoc - halfW, centerPos.yLoc + halfH, centerPos.color};
    vertexPos rect1c = {centerPos.xLoc - halfW, centerPos.yLoc - halfH, centerPos.color};
-   drawTriangle(rect1a, rect1b, rect1c);
 
    vertexPos rect2a = {centerPos.xLoc + halfW, centerPos.yLoc + halfH, centerPos.color};
    vertexPos rect2b = {centerPos.xLoc - halfW, centerPos.yLoc - halfH, centerPos.color};
    vertexPos rect2c = {centerPos.xLoc + halfW, centerPos.yLoc - halfH, centerPos.color};
-   drawTriangle(rect2a, rect2b, rect2c);
 
-   // if (fragment == true) {
-   //    rect1a.color = {(unsigned char)(rect1a.color.r - 30), (unsigned char)(rect1a.color.g - 30), (unsigned char)(rect1a.color.b - 30)};
-   //    rect1b.color = {(unsigned char)(rect1b.color.r - 60), (unsigned char)(rect1b.color.g - 60), (unsigned char)(rect1b.color.b - 60)};
-   //    fragmenting(rect1a, rect1b, rect1c);
-   //    rect2a.color = {(unsigned char)(rect2a.color.r - 30), (unsigned char)(rect2a.color.g - 30), (unsigned char)(rect2a.color.b - 30)};
-   //    rect2b.color = {(unsigned char)(rect2b.color.r - 60), (unsigned char)(rect2b.color.g - 60), (unsigned char)(rect2b.color.b - 60)};
-   //    fragmenting(rect2a, rect2b, rect2c);
-   // } else {
-   //    drawTriangle(rect1a, rect1b, rect1c);
-   //    drawTriangle(rect2a, rect2b, rect2c);
-   // }
+   drawline(rect1a, rect1b);
+   drawline(rect1b, rect1c);
+   drawline(rect1c, rect2c);
+   drawline(rect2c, rect1a);
+   
+   if (fillType == FILL) {
+      drawTriangle(rect1a, rect1b, rect1c);
+      drawTriangle(rect2a, rect2b, rect2c);
+   }
+
+   drawline(rect1a, rect1c);
 }
 
 void Canvas::widthLength(int w) {
@@ -301,6 +318,58 @@ void Canvas::widthLength(int w) {
 
 void Canvas::heightLength(int h) {
    heig = h;
+}
+
+void Canvas::drawCircle(vertexPos centerPos) {
+   int sides = 36;
+   int degree = 360 / sides;//2 * M_PI / sides;//360 / sides;
+
+   std::cout << vertices.size() << std::endl;
+   for (int i = 1; i < sides; i++) {
+      int currDegree = degree * i;
+      float radians = currDegree * (M_PI / 180);//2 * M_PI * i / sides;//currDegree * M_PI / 180;
+
+      int x = (rad * cos(radians)) + centerPos.xLoc;
+      int y = (rad * sin(radians)) + centerPos.yLoc;
+      vertexPos circVert = {x, y, vertColor};
+      vertices.push_back(circVert);
+   }
+
+   std::cout << vertices.size() << std::endl;
+   for (int j = 1; j + 2 <= vertices.size(); j++) {
+      vertexPos circ1 = vertices.at(j);
+      vertexPos circ2 = vertices.at(j + 1);
+
+      drawline(circ1, circ2);
+
+      if (fillType == FILL) {
+         drawTriangle(circ1, circ2, centerPos);
+         drawline(centerPos, circ1);
+      }
+   }
+
+   vertexPos circFirst = vertices.at(1);
+   int lastPos = vertices.size() - 1;
+   vertexPos circLast = vertices.at(lastPos);
+
+   drawline(circFirst, circLast);
+
+   if (fillType == FILL) {
+      drawTriangle(circFirst, centerPos, circLast);
+   }
+}
+
+void Canvas::radius(int r) {
+   rad = r;
+}
+
+void Canvas::drawPoint(vertexPos centerPos) {
+   if (lineSize == 1) {
+      _canvas.set(centerPos.xLoc, centerPos.yLoc, centerPos.color);
+   } else {
+      rad = lineSize / 2;
+      drawCircle(centerPos);
+   }
 }
 
 void Canvas::fragmented(bool frag) {
@@ -322,32 +391,26 @@ void Canvas::end() {
          vertexPos v2 = vertices.at(i + 1);
          vertexPos v3 = vertices.at(i + 2);
 
-         // if (fragment) {
-         //    fragmenting(v1, v2, v3);
-         //    std::cout << fragment << std::endl;
-         // } else {
-         //    std::cout << fragment << std::endl;
-            drawTriangle(v1, v2, v3);
-         // }
+         drawTriangle(v1, v2, v3);
       }
 
-      // if (shareSide.size() >= 2) {
-      //    // Put down how to color the shared line
-
-      // }
       vertices.clear();
    } else if (drawType == PrimitiveType::RECTANGLES) {
       vertexPos center = vertices.at(0);
       drawRectangle(center);
-
-      // if (sharedVertex.size() >= 2) {
-
-      // }
-
+      vertices.clear();
+   } else if (drawType == PrimitiveType::CIRCLES) {
+      vertexPos center = vertices.at(0);
+      drawCircle(center);
+      vertices.clear();
+   } else if (drawType == PrimitiveType::POINT) {
+      vertexPos center = vertices.at(0);
+      drawPoint(center);
       vertices.clear();
    }
 
-   // fragment = false;
+   fillType = FILL;
+   sharedVertex.clear();
 }
 
 void Canvas::vertex(int x, int y) {
