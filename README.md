@@ -46,6 +46,27 @@ canvas-drawer/build $ ../bin/draw_art
 ## Supported primitives
 
 TODO: Document the custom primitives supported by your canvas class
+Primitives:
+* Points
+* Lines
+* Triangles
+* Rectangles
+* Circles
+
+Canvas Features:
+* Drawing a line (with different slopes)
+* Drawing a triangle
+* Coloring the background
+* Creating interpolated lines and interpolated triangles
+* Creating composite shapes using triangles with overlaps
+
+Additional Canvas Features:
+* Gradient background
+* Drawing a circle
+* Drawing a rectangle
+* Letting the user set line widths
+* Adding a point primitive
+* Supporting both filled and outlined shapes
 
 ## Results
 

@@ -1,3 +1,13 @@
+/**
+ * canvas.cpp
+ * Author: Grace Choe
+ * Base Code Author: Aline Normoyle
+ * Date: 2/14/2023
+ * 
+ * Description:
+ * This program implements a class for drawing lines and simple shapes. Some being drawing points, lines, triangles, circles, and rectangles. It also employs interpolation on these shapes where gradients or one fill color can be applied. The background can also be gradient to create fun canvas images.
+ */
+
 #include "canvas.h"
 #include "math.h"
 #include <cassert>
@@ -8,26 +18,32 @@
 using namespace std;
 using namespace agl;
 
+// Constructor
 Canvas::Canvas(int w, int h) : _canvas(w, h) {
-   _canvas = Image(w, h);
 }
 
+// Destructor
 Canvas::~Canvas() {
 }
 
+// Save
 void Canvas::save(const std::string& filename) {
    _canvas.save(filename);
 }
 
+// Begin, to designate what shape to draw
 void Canvas::begin(PrimitiveType type) {
    drawType = type;
 }
 
+// Draw, to designate fill type (just outlining the shape or filling it in)
 void Canvas::draw(DrawFill type) {
    fillType = type;
 }
 
-void Canvas::lineColor(vertexPos pA, vertexPos pB) {//}, vertexPos pCurr) {
+// lineColor
+// Designates what color each pixel in the line is.
+void Canvas::lineColor(vertexPos pA, vertexPos pB) {
    Pixel pixColor;
    float dist1 = sqrt(pow((pointCurr.xLoc - pA.xLoc), 2) + pow((pointCurr.yLoc - pA.yLoc), 2));
    float dist2 = sqrt(pow((pB.xLoc - pA.xLoc), 2) + pow((pB.yLoc - pA.yLoc), 2));
@@ -40,6 +56,8 @@ void Canvas::lineColor(vertexPos pA, vertexPos pB) {//}, vertexPos pCurr) {
    pointCurr.color = pixColor;
 }
 
+// triangleColor
+// Designates what color each pixel in the triangle is.
 void Canvas::triangleColor(float alpha, float beta, float gamma, vertexPos pA, vertexPos pB, vertexPos pC) {
    Pixel triPix;
    triPix.r = (alpha * pA.color.r) + (beta * pB.color.r) + (gamma * pC.color.r);
@@ -49,10 +67,14 @@ void Canvas::triangleColor(float alpha, float beta, float gamma, vertexPos pA, v
    pointCurr.color = triPix;
 }
 
+// lineWidth
+// Allows user to change line width.
 void Canvas::lineWidth(int lw) {
    lineSize = lw;
 }
 
+// drawline
+// Starts calculating to draw the line between two points.
 void Canvas::drawline(vertexPos pointA, vertexPos pointB) {
    float W = pointB.xLoc - pointA.xLoc;
    float H = pointB.yLoc - pointA.yLoc;
@@ -74,6 +96,8 @@ void Canvas::drawline(vertexPos pointA, vertexPos pointB) {
    }
 }
 
+// drawline_low
+// One type for drawing a line, calculates which pixel to color in.
 void Canvas::drawline_low(vertexPos pointA, vertexPos pointB) {
    int y = pointA.yLoc;
    float W = pointB.xLoc - pointA.xLoc;
@@ -88,7 +112,7 @@ void Canvas::drawline_low(vertexPos pointA, vertexPos pointB) {
    float F = (2 * H) - W;
 
    for (int x = pointA.xLoc; x <= pointB.xLoc; x++) {
-      if ((y < _canvas.width()) && (x < _canvas.height())) {
+      if ((x < _canvas.width()) && (y < _canvas.height())) {
          pointCurr = {x, y};
          lineColor(pointA, pointB);
          
@@ -129,6 +153,8 @@ void Canvas::drawline_low(vertexPos pointA, vertexPos pointB) {
    }
 }
 
+// drawline_high
+// Another type for drawing a line, calculates which pixel to color in.
 void Canvas::drawline_high(vertexPos pointA, vertexPos pointB) {
    int x = pointA.xLoc;
    float W = pointB.xLoc - pointA.xLoc;
@@ -143,7 +169,7 @@ void Canvas::drawline_high(vertexPos pointA, vertexPos pointB) {
    float F = (2 * W) - H;
 
    for (int y = pointA.yLoc; y <= pointB.yLoc; y++) {
-      if ((y < _canvas.width()) && (x < _canvas.height())) {
+      if ((x < _canvas.width()) && (y < _canvas.height())) {
          pointCurr = {x, y};
          lineColor(pointA, pointB);
          _canvas.set(pointCurr.yLoc, pointCurr.xLoc, pointCurr.color);
@@ -170,6 +196,8 @@ void Canvas::drawline_high(vertexPos pointA, vertexPos pointB) {
    }
 }
 
+// drawTriangle
+// Starts calculating to draw the triangle using three points.
 void Canvas::drawTriangle(vertexPos pointA, vertexPos pointB, vertexPos pointC) {
    if (fillType == OUTLINE) {
       drawline(pointA, pointB);
@@ -201,7 +229,7 @@ void Canvas::drawTriangle(vertexPos pointA, vertexPos pointB, vertexPos pointC) 
             gamma = f12(pointA, pointB, pointCurr) / f12(pointA, pointB, pointC);
 
             if (alpha > 0 && beta > 0 && gamma > 0) {
-               if ((y < _canvas.width()) && (x < _canvas.height())) {
+               if ((x < _canvas.width()) && (y < _canvas.height())) {
                   triangleColor(alpha, beta, gamma, pointA, pointB, pointC);
                   _canvas.set(pointCurr.yLoc, pointCurr.xLoc, pointCurr.color);
                }
@@ -221,6 +249,8 @@ void Canvas::drawTriangle(vertexPos pointA, vertexPos pointB, vertexPos pointC) 
    }
 }
 
+// fragmenting
+// Fragments the colors in a triangle to have more triangle gradiations within it.
 void Canvas::fragmenting(vertexPos pointA, vertexPos pointB, vertexPos pointC) {
    float alpha, beta, gamma;
 
@@ -253,7 +283,7 @@ void Canvas::fragmenting(vertexPos pointA, vertexPos pointB, vertexPos pointC) {
 
          if (alpha >= 0 && beta >= 0 && gamma >= 0) {
             if (((alpha > 0) || (aComp > 0)) && ((beta > 0) || (bComp > 0)) && ((gamma > 0) || (cComp > 0))) {
-               if ((y < _canvas.width()) && (x < _canvas.height())) {
+               if ((x < _canvas.width()) && (y < _canvas.height())) {
                   triangleColor(alpha, beta, gamma, pointA, pointB, pointC);
                   _canvas.set(pointCurr.yLoc, pointCurr.xLoc, pointCurr.color);
                }
@@ -263,6 +293,8 @@ void Canvas::fragmenting(vertexPos pointA, vertexPos pointB, vertexPos pointC) {
    }
 }
 
+// f01
+// Equation, used in calculations for drawing the triangle.
 float Canvas::f01(vertexPos point0, vertexPos point1, vertexPos curr) {
    float result;
    float part1 = (point0.yLoc - point1.yLoc) * pointCurr.xLoc;
@@ -271,6 +303,8 @@ float Canvas::f01(vertexPos point0, vertexPos point1, vertexPos curr) {
    return result;
 }
 
+// f12
+// Equation, used in calculations for drawing the triangle.
 float Canvas::f12(vertexPos point1, vertexPos point2, vertexPos curr) {
    float result;
    float part1 = (point1.yLoc - point2.yLoc) * curr.xLoc;
@@ -279,6 +313,8 @@ float Canvas::f12(vertexPos point1, vertexPos point2, vertexPos curr) {
    return result;
 }
 
+// f20
+// Equation, used in calculations for drawing the triangle.
 float Canvas::f20(vertexPos point2, vertexPos point0, vertexPos curr) {
    float result;
    float part1 = (point2.yLoc - point0.yLoc) * curr.xLoc;
@@ -287,7 +323,9 @@ float Canvas::f20(vertexPos point2, vertexPos point0, vertexPos curr) {
    return result;
 }
 
-void Canvas::drawRectangle(vertexPos centerPos) {
+// drawRectangle
+// Starts calculating to draw the rectangle using its center point and its width and height.
+void Canvas::drawRectangle(vertexPos centerPos, int wid, int heig) {
    int halfW = wid / 2;
    int halfH = heig / 2;
 
@@ -307,77 +345,93 @@ void Canvas::drawRectangle(vertexPos centerPos) {
    if (fillType == FILL) {
       drawTriangle(rect1a, rect1b, rect1c);
       drawTriangle(rect2a, rect2b, rect2c);
+      drawline(rect1a, rect1c);
    }
-
-   drawline(rect1a, rect1c);
 }
 
+// widthLength
+// Gets the width, for width calculations when making a shape.
 void Canvas::widthLength(int w) {
-   wid = w;
+   widths.push_back(w);
 }
 
+// heightLength
+// Gets the height, for height calculations when making a shape.
 void Canvas::heightLength(int h) {
-   heig = h;
+   heights.push_back(h);
 }
 
-void Canvas::drawCircle(vertexPos centerPos) {
+// drawCircle
+// Starts calculating to draw the circle using its center point and its radius.
+void Canvas::drawCircle(vertexPos centerPos, int rad) {
    int sides = 36;
    int degree = 360 / sides;//2 * M_PI / sides;//360 / sides;
 
-   std::cout << vertices.size() << std::endl;
    for (int i = 1; i < sides; i++) {
       int currDegree = degree * i;
       float radians = currDegree * (M_PI / 180);//2 * M_PI * i / sides;//currDegree * M_PI / 180;
 
       int x = (rad * cos(radians)) + centerPos.xLoc;
       int y = (rad * sin(radians)) + centerPos.yLoc;
-      vertexPos circVert = {x, y, vertColor};
-      vertices.push_back(circVert);
+      vertexPos circVert = {x, y, centerPos.color};
+      circVertices.push_back(circVert);
    }
 
-   std::cout << vertices.size() << std::endl;
-   for (int j = 1; j + 2 <= vertices.size(); j++) {
-      vertexPos circ1 = vertices.at(j);
-      vertexPos circ2 = vertices.at(j + 1);
+   for (int j = 0; j + 2 <= circVertices.size(); j++) {
+      vertexPos circ1 = circVertices.at(j);
+      vertexPos circ2 = circVertices.at(j + 1);
 
       drawline(circ1, circ2);
 
       if (fillType == FILL) {
          drawTriangle(circ1, circ2, centerPos);
          drawline(centerPos, circ1);
+         drawline(centerPos, circ2);
       }
    }
 
-   vertexPos circFirst = vertices.at(1);
-   int lastPos = vertices.size() - 1;
-   vertexPos circLast = vertices.at(lastPos);
+   vertexPos circFirst = circVertices.at(0);
+   int lastPos = circVertices.size() - 1;
+   vertexPos circLast = circVertices.at(lastPos);
 
    drawline(circFirst, circLast);
 
    if (fillType == FILL) {
       drawTriangle(circFirst, centerPos, circLast);
    }
+
+   circVertices.clear();
 }
 
-void Canvas::radius(int r) {
-   rad = r;
+// radiusLength
+// Gets the radius, for radius calculations when making a shape.
+void Canvas::radiusLength(int r) {
+   radiuses.push_back(r);
 }
 
+// drawPoint
+// Starts calculating to draw the point using its center point.
 void Canvas::drawPoint(vertexPos centerPos) {
-   if (lineSize == 1) {
+   if (lineSize == 1) { // handles creating a point that is one pixel in size
       _canvas.set(centerPos.xLoc, centerPos.yLoc, centerPos.color);
-   } else {
+   } else { // handles creating a point that is more than one pixel in size.
       rad = lineSize / 2;
-      drawCircle(centerPos);
+      drawCircle(centerPos, lineSize);
    }
 }
 
+// fragmented
+// Checks if user requested for fragmenting a triangle shape
 void Canvas::fragmented(bool frag) {
-   fragment = frag;
+   if (frag == true) {
+      fragment = 1;
+   }
 }
 
+// end
+// Prompts for all the shapes to be drawn based on the user's shape type input.
 void Canvas::end() {
-   if (drawType == PrimitiveType::LINES) {
+   if (drawType == PrimitiveType::LINES) { // for lines
       for (int i = 0; i + 2 <= vertices.size(); i += 2) {
          vertexPos v1 = vertices.at(i);
          vertexPos v2 = vertices.at(i + 1);
@@ -385,25 +439,42 @@ void Canvas::end() {
       }
       vertices.clear();
       lineSize = 0;
-   } else if (drawType == PrimitiveType::TRIANGLES) {
+   } else if (drawType == PrimitiveType::TRIANGLES) { // for triangles
       for (int i = 0; i + 3 <= vertices.size(); i += 3) {
          vertexPos v1 = vertices.at(i);
          vertexPos v2 = vertices.at(i + 1);
          vertexPos v3 = vertices.at(i + 2);
 
-         drawTriangle(v1, v2, v3);
+         if (fragment == 0) {
+            drawTriangle(v1, v2, v3);
+         } else {
+            fragmenting(v1, v2, v3);
+         }
       }
 
       vertices.clear();
-   } else if (drawType == PrimitiveType::RECTANGLES) {
-      vertexPos center = vertices.at(0);
-      drawRectangle(center);
+      fragment = 0;
+   } else if (drawType == PrimitiveType::RECTANGLES) { // for rectangles
+      for (int i = 0; i < vertices.size(); i++) {
+         vertexPos vert = vertices.at(i);
+         int w = widths.at(i);
+         int h = heights.at(i);
+         drawRectangle(vert, w, h);
+      }
+
       vertices.clear();
-   } else if (drawType == PrimitiveType::CIRCLES) {
-      vertexPos center = vertices.at(0);
-      drawCircle(center);
+      widths.clear();
+      heights.clear();
+   } else if (drawType == PrimitiveType::CIRCLES) { // for circles
+      for (int i = 0; i < radiuses.size(); i++) {
+         vertexPos vert = vertices.at(i);
+         int r = radiuses.at(i);
+         drawCircle(vert, r);
+      }
+
       vertices.clear();
-   } else if (drawType == PrimitiveType::POINT) {
+      radiuses.clear();
+   } else if (drawType == PrimitiveType::POINT) { // for point
       vertexPos center = vertices.at(0);
       drawPoint(center);
       vertices.clear();
@@ -413,6 +484,8 @@ void Canvas::end() {
    sharedVertex.clear();
 }
 
+// vertex
+// Creates a vertex with a respective color and stores it within a vector.
 void Canvas::vertex(int x, int y) {
    vertexPos vertex = {x, y, vertColor};
 
@@ -426,10 +499,14 @@ void Canvas::vertex(int x, int y) {
    vertices.push_back(vertex);
 }
 
+// color
+// Designates the color the user inputs.
 void Canvas::color(unsigned char r, unsigned char g, unsigned char b) {
    vertColor = {r, g, b};
 }
 
+// background
+// Makes the background color the color the user inputs. This method is just for one fill color.
 void Canvas::background(unsigned char r, unsigned char g, unsigned char b) {
    for (int i = 0; i < _canvas.height(); i++) {
       for (int j = 0; j < _canvas.width(); j++) {
@@ -439,6 +516,9 @@ void Canvas::background(unsigned char r, unsigned char g, unsigned char b) {
    }
 }
 
+// background
+// Same name as the other background method to allow user to either input one or two colors.
+// Inputting two colors allows for background to have gradient colors.
 void Canvas::background(Pixel bottom, Pixel top) {
    vertexPos botVert = {_canvas.height(), 0, bottom};
    vertexPos topVert = {0, 0, top};

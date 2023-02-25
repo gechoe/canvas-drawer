@@ -55,11 +55,11 @@ namespace agl
 
          void drawTriangle(vertexPos locA, vertexPos locB, vertexPos locC);
          void fragmenting(vertexPos locA, vertexPos locB, vertexPos locC);
-         void drawRectangle(vertexPos centerPos);
+         void drawRectangle(vertexPos centerPos, int widthLen, int heightLen);
          void widthLength(int w);
          void heightLength(int h);
-         void drawCircle(vertexPos centerPos);
-         void radius(int r);
+         void drawCircle(vertexPos centerPos, int radiusLen);
+         void radiusLength(int r);
          void drawPoint(vertexPos centerPos);
 
          float f01(vertexPos loc0, vertexPos loc1, vertexPos locCurr);
@@ -92,9 +92,13 @@ namespace agl
          DrawFill fillType = FILL;
          vertexPos pointCurr;
          vector<vertexPos> sharedVertex;
-         int wid, heig, rad, lineSize;
-         bool fragment = false;
+         vector<int> widths;
+         vector<int> heights;
+         vector<int> radiuses;
+         int rad, lineSize = 1;
+         int fragment = 0;
          vector<vertexPos> vertices;
+         vector<vertexPos> circVertices;
       };
 }
 
