@@ -46,7 +46,8 @@ int main(int argc, char** argv)
    drawer.save("diff-widths-color.png");
 
    // Example 4: User being able to create triangles.
-   // Makes randomized triangles of randomized colors and sizes at randomized locations.
+   // Makes randomized triangles of randomized colors and sizes at randomized
+   // locations.
    drawer.background(0,0,0);
 
    amount = 100;
@@ -104,8 +105,10 @@ int main(int argc, char** argv)
 
    drawer.save("triangle-randomized.png");
 
-   // Example 5: User being able to create an outline of triangles, circles, and rectangles.
-   // Makes randomized triangles, circles, and rectangles of randomized colors and sizes at randomized locations.
+   // Example 5: User being able to create an outline of triangles, circles, and
+   // rectangles.
+   // Makes randomized triangles, circles, and rectangles of randomized colors
+   // and sizes at randomized locations.
    drawer.background(255, 255, 255);
 
    amount = 25;
@@ -238,8 +241,10 @@ int main(int argc, char** argv)
 
    drawer.save("outline-shapes-colorful.png");
 
-   // Example 6: User being able to create filled triangles, circles, and rectangles.
-   // Makes randomized triangles, circles, and rectangles of randomized colors and sizes at randomized locations.
+   // Example 6: User being able to create filled triangles, circles, and
+   // rectangles.
+   // Makes randomized triangles, circles, and rectangles of randomized colors
+   //and sizes at randomized locations.
    drawer.background(255, 255, 255);
 
    amount = 25;

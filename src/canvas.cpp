@@ -5,7 +5,10 @@
  * Date: 2/14/2023
  * 
  * Description:
- * This program implements a class for drawing lines and simple shapes. Some being drawing points, lines, triangles, circles, and rectangles. It also employs interpolation on these shapes where gradients or one fill color can be applied. The background can also be gradient to create fun canvas images.
+ * This program implements a class for drawing lines and simple shapes.
+ * Some being drawing points, lines, triangles, circles, and rectangles. It also
+ * employs interpolation on these shapes where gradients or one fill color can
+ * be applied. The background can also be gradient to create fun canvas images.
  */
 
 #include "canvas.h"
@@ -45,7 +48,8 @@ void Canvas::draw(DrawFill type) {
 // Designates what color each pixel in the line is.
 void Canvas::lineColor(vertexPos pA, vertexPos pB) {
    Pixel pixColor;
-   float dist1 = sqrt(pow((pointCurr.xLoc - pA.xLoc), 2) + pow((pointCurr.yLoc - pA.yLoc), 2));
+   float dist1 = sqrt(pow((pointCurr.xLoc - pA.xLoc), 2) + 
+     pow((pointCurr.yLoc - pA.yLoc), 2));
    float dist2 = sqrt(pow((pB.xLoc - pA.xLoc), 2) + pow((pB.yLoc - pA.yLoc), 2));
    float t = dist1 / dist2;
 
@@ -58,7 +62,8 @@ void Canvas::lineColor(vertexPos pA, vertexPos pB) {
 
 // triangleColor
 // Designates what color each pixel in the triangle is.
-void Canvas::triangleColor(float alpha, float beta, float gamma, vertexPos pA, vertexPos pB, vertexPos pC) {
+void Canvas::triangleColor(float alpha, float beta, float gamma, vertexPos pA,
+   vertexPos pB, vertexPos pC) {
    Pixel triPix;
    triPix.r = (alpha * pA.color.r) + (beta * pB.color.r) + (gamma * pC.color.r);
    triPix.g = (alpha * pA.color.g) + (beta * pB.color.g) + (gamma * pC.color.g);
@@ -121,11 +126,14 @@ void Canvas::drawline_low(vertexPos pointA, vertexPos pointB) {
          if (lineSize > 1) {
             int bothsides = 2;
             for (int i = lineSize; i > 1; i--) {
-               if ((i % 2 == 1) && (pointCurr.xLoc + (bothsides / 2) < _canvas.height())) {
-                  _canvas.set(pointCurr.yLoc, pointCurr.xLoc + (bothsides / 2), pointCurr.color);
+               if ((i % 2 == 1) && 
+                  (pointCurr.xLoc + (bothsides / 2) < _canvas.height())) {
+                  _canvas.set(pointCurr.yLoc, pointCurr.xLoc + (bothsides / 2),
+                    pointCurr.color);
                   bothsides++;
                } else if (pointCurr.xLoc + (bothsides / 2) > 0) { 
-                  _canvas.set(pointCurr.yLoc, pointCurr.xLoc - (bothsides / 2), pointCurr.color);
+                  _canvas.set(pointCurr.yLoc, pointCurr.xLoc - (bothsides / 2),
+                    pointCurr.color);
                   bothsides++;
                }
             }
@@ -133,11 +141,14 @@ void Canvas::drawline_low(vertexPos pointA, vertexPos pointB) {
          if (lineSize > 1) {
             int bothsides = 2;
             for (int i = lineSize; i > 1; i--) {
-               if ((i % 2 == 1) && (pointCurr.yLoc + (bothsides / 2) < _canvas.width())) {
-                  _canvas.set(pointCurr.yLoc + (bothsides / 2), pointCurr.xLoc, pointCurr.color);
+               if ((i % 2 == 1) &&
+                  (pointCurr.yLoc + (bothsides / 2) < _canvas.width())) {
+                  _canvas.set(pointCurr.yLoc + (bothsides / 2), pointCurr.xLoc,
+                    pointCurr.color);
                   bothsides++;
                } else if (pointCurr.yLoc - (bothsides / 2) >= 0) {
-                  _canvas.set(pointCurr.yLoc - (bothsides / 2), pointCurr.xLoc, pointCurr.color);
+                  _canvas.set(pointCurr.yLoc - (bothsides / 2), pointCurr.xLoc,
+                    pointCurr.color);
                   bothsides++;
                }
             }
@@ -176,11 +187,14 @@ void Canvas::drawline_high(vertexPos pointA, vertexPos pointB) {
          if (lineSize > 1) {
             int bothsides = 2;
             for (int i = lineSize; i > 1; i--) {
-               if ((i % 2 == 1) && (pointCurr.xLoc + (bothsides / 2) < _canvas.height())) {
-                  _canvas.set(pointCurr.yLoc, pointCurr.xLoc + (bothsides / 2), pointCurr.color);
+               if ((i % 2 == 1) && 
+                  (pointCurr.xLoc + (bothsides / 2) < _canvas.height())) {
+                  _canvas.set(pointCurr.yLoc, pointCurr.xLoc + (bothsides / 2), 
+                    pointCurr.color);
                   bothsides++;
                } else if (pointCurr.xLoc - (bothsides / 2) >= 0) { 
-                  _canvas.set(pointCurr.yLoc, pointCurr.xLoc - (bothsides / 2), pointCurr.color);
+                  _canvas.set(pointCurr.yLoc, pointCurr.xLoc - (bothsides / 2),
+                    pointCurr.color);
                   bothsides++;
                }
             }
@@ -282,7 +296,8 @@ void Canvas::fragmenting(vertexPos pointA, vertexPos pointB, vertexPos pointC) {
          float cComp = f01(pointA, pointB, {-1, -1}) * fgamma;
 
          if (alpha >= 0 && beta >= 0 && gamma >= 0) {
-            if (((alpha > 0) || (aComp > 0)) && ((beta > 0) || (bComp > 0)) && ((gamma > 0) || (cComp > 0))) {
+            if (((alpha > 0) || (aComp > 0)) && ((beta > 0) || (bComp > 0))
+               && ((gamma > 0) || (cComp > 0))) {
                if ((x < _canvas.width()) && (y < _canvas.height())) {
                   triangleColor(alpha, beta, gamma, pointA, pointB, pointC);
                   _canvas.set(pointCurr.yLoc, pointCurr.xLoc, pointCurr.color);
@@ -299,7 +314,8 @@ float Canvas::f01(vertexPos point0, vertexPos point1, vertexPos curr) {
    float result;
    float part1 = (point0.yLoc - point1.yLoc) * pointCurr.xLoc;
    float part2 = (point1.xLoc - point0.xLoc) * pointCurr.yLoc;
-   result = part1 + part2 + (point0.xLoc * point1.yLoc) - (point1.xLoc * point0.yLoc);
+   result = part1 + part2 + (point0.xLoc * point1.yLoc)
+      - (point1.xLoc * point0.yLoc);
    return result;
 }
 
@@ -309,7 +325,8 @@ float Canvas::f12(vertexPos point1, vertexPos point2, vertexPos curr) {
    float result;
    float part1 = (point1.yLoc - point2.yLoc) * curr.xLoc;
    float part2 = (point2.xLoc - point1.xLoc) * curr.yLoc;
-   result = part1 + part2 + (point1.xLoc * point2.yLoc) - (point2.xLoc * point1.yLoc);
+   result = part1 + part2 + (point1.xLoc * point2.yLoc)
+      - (point2.xLoc * point1.yLoc);
    return result;
 }
 
@@ -319,7 +336,8 @@ float Canvas::f20(vertexPos point2, vertexPos point0, vertexPos curr) {
    float result;
    float part1 = (point2.yLoc - point0.yLoc) * curr.xLoc;
    float part2 = (point0.xLoc - point2.xLoc) * curr.yLoc;
-   result = part1 + part2 + (point2.xLoc * point0.yLoc) - (point0.xLoc * point2.yLoc);
+   result = part1 + part2 + (point2.xLoc * point0.yLoc)
+      - (point0.xLoc * point2.yLoc);
    return result;
 }
 
@@ -369,7 +387,8 @@ void Canvas::drawCircle(vertexPos centerPos, int rad) {
 
    for (int i = 1; i < sides; i++) {
       int currDegree = degree * i;
-      float radians = currDegree * (M_PI / 180);//2 * M_PI * i / sides;//currDegree * M_PI / 180;
+      //2 * M_PI * i / sides;//currDegree * M_PI / 180;
+      float radians = currDegree * (M_PI / 180);
 
       int x = (rad * cos(radians)) + centerPos.xLoc;
       int y = (rad * sin(radians)) + centerPos.yLoc;
@@ -506,7 +525,8 @@ void Canvas::color(unsigned char r, unsigned char g, unsigned char b) {
 }
 
 // background
-// Makes the background color the color the user inputs. This method is just for one fill color.
+// Makes the background color the color the user inputs. This method is just for
+// one fill color.
 void Canvas::background(unsigned char r, unsigned char g, unsigned char b) {
    for (int i = 0; i < _canvas.height(); i++) {
       for (int j = 0; j < _canvas.width(); j++) {
@@ -517,7 +537,8 @@ void Canvas::background(unsigned char r, unsigned char g, unsigned char b) {
 }
 
 // background
-// Same name as the other background method to allow user to either input one or two colors.
+// Same name as the other background method to allow user to either input one or
+// two colors.
 // Inputting two colors allows for background to have gradient colors.
 void Canvas::background(Pixel bottom, Pixel top) {
    vertexPos botVert = {_canvas.height(), 0, bottom};
@@ -526,8 +547,10 @@ void Canvas::background(Pixel bottom, Pixel top) {
    for (int i = 0; i < _canvas.height(); i++) {
       vertexPos currVert = {i, 0};
       Pixel pix;
-      float dist1 = sqrt(pow((currVert.xLoc - botVert.xLoc), 2) + pow((currVert.yLoc - botVert.yLoc), 2));
-      float dist2 = sqrt(pow((topVert.xLoc - botVert.xLoc), 2) + pow((topVert.yLoc - botVert.yLoc), 2));
+      float dist1 = sqrt(pow((currVert.xLoc - botVert.xLoc), 2)
+        + pow((currVert.yLoc - botVert.yLoc), 2));
+      float dist2 = sqrt(pow((topVert.xLoc - botVert.xLoc), 2)
+        + pow((topVert.yLoc - botVert.yLoc), 2));
       float t = dist1 / dist2;
 
       pix.r = ((float)botVert.color.r * (1.0 - t)) + ((float)topVert.color.r * t);

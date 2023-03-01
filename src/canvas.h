@@ -46,7 +46,8 @@ namespace agl
          void draw(DrawFill type);
 
          void lineColor(vertexPos locA, vertexPos locB);//, vertexPos currLoc);
-         void triangleColor(float alphaA, float betaB, float gammaG, vertexPos locA, vertexPos locB, vertexPos locC);
+         void triangleColor(float alphaA, float betaB, float gammaG,
+            vertexPos locA, vertexPos locB, vertexPos locC);
 
          void lineWidth(int lineWidthSize);
          void drawline(vertexPos locA, vertexPos locB);
